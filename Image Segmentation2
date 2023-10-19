@@ -1,0 +1,40 @@
+import cv2
+import numpy as np
+
+# Load the image of the leaf
+img = cv2.imread(r"C:\Users\Rahul Gupta\Desktop\dataset\Grassy Shoots\IMG_0554.JPG")
+img = cv2.resize(img, (256, 256))
+# Convert the image to HSV color space
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# Define the lower and upper bounds for the green color of the grassy shoots
+lower_green = np.array([40, 50, 50])
+upper_green = np.array([80, 255, 255])
+
+# Create a mask for the green color of the grassy shoots
+mask = cv2.inRange(hsv, lower_green, upper_green)
+
+# Apply morphological operations to the binary mask to fill small gaps and remove noise
+kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+# Find contours in the binary mask
+contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Iterate through each contour and filter out small contours
+for contour in contours:
+    area = cv2.contourArea(contour)
+
+    # If the area is below a certain threshold, skip the contour
+    if area < 500:
+        continue
+
+    # Draw a polyline around the contour
+    epsilon = 0.01 * cv2.arcLength(contour, True)
+    approx = cv2.approxPolyDP(contour, epsilon, True)
+    cv2.polylines(img, [approx], True, (0, 0, 255), 2)
+
+# Display the image with highlighted areas affected by grassy shoots
+cv2.imshow('Highlighted Areas Affected by Grassy Shoots', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

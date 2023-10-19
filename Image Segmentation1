@@ -1,0 +1,43 @@
+import cv2
+import numpy as np
+
+# Load the image of the leaf
+img = cv2.imread(r"C:\Users\Rahul Gupta\Desktop\dataset\YLD\20230107_105443.jpg")
+
+# Resize the image to 256 pixels
+img = cv2.resize(img, (256, 256))
+img = cv2.resize(img, (256, 256))
+
+# Convert the image to HSV color space
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# Define the range of yellow color in HSV
+lower_yellow = np.array([20, 100, 100])
+upper_yellow = np.array([40, 255, 255])
+
+# Threshold the image to get only yellow colors
+mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+# Apply morphological operations to remove noise and fill small gaps in the binary mask
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+# Find contours in the binary mask
+contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Iterate through each contour and filter out small contours
+for contour in contours:
+    perimeter = cv2.arcLength(contour, True)
+    
+    # If the perimeter is below a certain threshold, skip the contour
+    if perimeter < 700:
+        continue
+    
+    # Draw a bounding box around the contour
+    x, y, w, h = cv2.boundingRect(contour)
+    cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 2)
+        
+# Display the image with highlighted yield regions
+cv2.imshow("Highlighted Yield Regions", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
