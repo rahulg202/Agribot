@@ -1,4 +1,4 @@
-# AGROBOOT
+# AGROBOT
 **Objective**: To develope a machine learning model to accurately identify and segment regions of plant leaves affected by diseases or pests from images.<br/>
 **Data Handling**: Utilized a large dataset of plant leaf images, leveraging TensorFlow for preprocessing and augmentation to enhance model performance.<br/>
 **Model Architecture**: Designed a deep learning model with multiple Conv2D layers, MaxPooling, and Dense layers, optimized with Adam optimizer and trained with Sparse Categorical Crossentropy loss.<br/>
